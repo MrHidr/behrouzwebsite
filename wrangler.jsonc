@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "behrouz-website",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-07-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Bump this if you outgrow the free tier's request/CPU limits.
+  "observability": {
+    "enabled": true
+  }
+}
