@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { HERO_MEDIA } from "@/lib/heroConfig";
 import { useIntro } from "@/components/intro/IntroProvider";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 
 /**
  * The hero background: a single 4s intro shot (NOT a loop).
@@ -25,6 +25,7 @@ import { useIntro } from "@/components/intro/IntroProvider";
 export function HeroIntroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { phase, videoReady, uiReady } = useIntro();
+  const { hero } = useCMSContent();
 
   // Kick off download and report once the FIRST FRAME is paintable.
   useEffect(() => {
@@ -78,16 +79,16 @@ export function HeroIntroVideo() {
       <video
         ref={videoRef}
         className="absolute inset-0 size-full object-cover"
-        poster={HERO_MEDIA.poster}
+        poster={hero.poster}
         muted
         playsInline
         preload="auto"
         onTimeUpdate={(e) => {
-          if (e.currentTarget.currentTime >= HERO_MEDIA.uiAt) uiReady();
+          if (e.currentTarget.currentTime >= hero.uiAt) uiReady();
         }}
         onEnded={uiReady} // safety: never leave the UI hidden after the shot ends
       >
-        <source src={HERO_MEDIA.introMp4} type="video/mp4" />
+        <source src={hero.video} type="video/mp4" />
       </video>
     </div>
   );

@@ -1,0 +1,29 @@
+/node_modules
+/New Product assets/
+/private/career-files/*
+!/private/career-files/.gitkeep
+/.next
+/out
+/.open-next
+/.wrangler
+next-env.d.ts
+tsconfig.tsbuildinfo
+.DS_Store
+*.log
+.dev.vars
+/.claude
+/delivery/
+/tmp/
+# Payload CMS local uploads (production uses R2/S3 or a named Docker volume)
+public/media/cms/
+
+# Payload and Cloudflare local state
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Runtime secrets
+.env
+.env.*
+!.env.example

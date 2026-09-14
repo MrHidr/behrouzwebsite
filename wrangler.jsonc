@@ -2,14 +2,33 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "behrouz-website",
   "main": ".open-next/worker.js",
-  "compatibility_date": "2026-07-08",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_date": "2026-09-08",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  // Bump this if you outgrow the free tier's request/CPU limits.
+  "vars": {
+    "PAYLOAD_DB": "d1",
+    "CMS_ENABLED": "true",
+    "SERVER_URL": "https://REPLACE_WITH_YOUR_DOMAIN",
+    "CMS_ALLOWED_ORIGINS": "https://REPLACE_WITH_YOUR_DOMAIN"
+  },
+  "d1_databases": [
+    {
+      "binding": "D1",
+      "database_name": "behrouz-cms",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "behrouz-cms-media"
+    }
+  ],
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "head_sampling_rate": 1
   }
 }

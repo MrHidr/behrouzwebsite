@@ -2,11 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { HERO_LINK } from "@/lib/heroConfig";
-import { STR } from "@/lib/i18n";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { useIntroPhase } from "@/components/intro/IntroProvider";
 import { ArrowDown } from "@/components/ui/icons";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -16,11 +15,12 @@ const container = {
 };
 const line = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export function HeroContent() {
   const { locale, t } = useLocale();
+  const { hero } = useCMSContent();
   const en = locale === "en";
   const titleFont = en ? "font-montserrat" : "font-yekan";
   const phase = useIntroPhase();
@@ -47,11 +47,11 @@ export function HeroContent() {
           variants={line}
           className={
             en
-              ? "font-montserrat text-[18px] font-medium italic text-white/85 sm:text-[22px] lg:text-[26px]"
-              : "font-dast text-[22px] text-white/90 sm:text-[28px] lg:text-[32px]"
+              ? "relative isolate overflow-hidden rounded-full border border-white/20 bg-black/20 px-5 py-2.5 font-montserrat text-[18px] font-medium italic text-white/90 shadow-[0_12px_40px_rgba(0,0,0,.2),inset_0_1px_0_rgba(255,255,255,.14)] backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/55 before:to-transparent sm:px-7 sm:py-3 sm:text-[22px] lg:text-[26px]"
+              : "relative isolate overflow-hidden rounded-full border border-white/20 bg-black/20 px-6 py-2.5 font-dast text-[22px] text-white/95 shadow-[0_12px_40px_rgba(0,0,0,.2),inset_0_1px_0_rgba(255,255,255,.14)] backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-5 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/55 before:to-transparent sm:px-8 sm:py-3 sm:text-[28px] lg:text-[32px]"
           }
         >
-          {t(STR.hero.script)}
+          {t(hero.script)}
         </motion.p>
 
         <motion.h1
@@ -62,24 +62,24 @@ export function HeroContent() {
               : "text-[34px] leading-[1.05] sm:text-[52px] lg:text-[80px]"
           }`}
         >
-          {t(STR.hero.title)}
+          {t(hero.title)}
         </motion.h1>
 
         <motion.div variants={line} className="pointer-events-auto">
           <Link
-            href={HERO_LINK}
+            href={hero.link}
             onClick={(e) => e.stopPropagation()}
             className={`group inline-flex items-center gap-1 ${titleFont} text-[15px] font-medium text-white/75 transition-colors duration-300 hover:text-white sm:text-[18px] lg:text-[20px]`}
           >
             <span className="relative after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-right after:scale-x-0 after:bg-white/70 after:transition-transform after:duration-300 group-hover:after:origin-left group-hover:after:scale-x-100">
-              {t(STR.hero.eyebrow)}
+              {t(hero.eyebrow)}
             </span>
           </Link>
         </motion.div>
       </motion.div>
 
       {/* scroll-down cue: appears after the copy settles, gently bounces, and
-          jumps one viewport down to the About section on click */}
+          jumps one viewport down to the products section on click */}
       <motion.button
         type="button"
         onClick={(e) => {

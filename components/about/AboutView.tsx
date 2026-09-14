@@ -25,7 +25,6 @@ export function AboutView() {
     <div className="relative bg-white">
       {/* ============ HERO ============ */}
       <section ref={heroRef} className="relative flex h-[100svh] min-h-[560px] w-full items-center justify-center overflow-hidden bg-behrouz-ink">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img
           style={{ y: heroY, scale: heroScale }}
           src="/media/site/BehrouzAbout.webp"
@@ -44,7 +43,7 @@ export function AboutView() {
           <motion.h1 variants={reveal} className={`${font} text-[52px] font-extrabold uppercase leading-none text-white lg:text-[104px]`}>
             {t(STR.about.title)}
           </motion.h1>
-          <motion.span variants={reveal} className="mt-6 rounded-full border border-white/25 bg-white/10 px-5 py-2 font-montserrat text-[14px] font-semibold uppercase tracking-wide text-white backdrop-blur">
+          <motion.span variants={reveal} className={`mt-6 rounded-full border border-white/25 bg-white/10 px-5 py-2 text-[14px] font-semibold text-white backdrop-blur ${font} ${en ? "uppercase tracking-wide" : "tracking-normal"}`}>
             {t(STR.about.since)}
           </motion.span>
         </motion.div>
@@ -149,7 +148,7 @@ export function AboutView() {
             font={font}
           />
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }} className="text-start">
-            <span className="font-montserrat text-[13px] font-semibold uppercase tracking-widest text-behrouz-red">{t(STR.about.qualityTitle)}</span>
+            <span className={`${font} text-[13px] font-semibold text-behrouz-red ${en ? "uppercase tracking-widest" : "tracking-normal"}`}>{t(STR.about.qualityTitle)}</span>
             <h2 className={`${font} mt-3 text-[34px] font-extrabold leading-tight lg:text-[50px]`}>{t(STR.about.qualityTitle)}</h2>
             <p className={`${font} mt-5 text-[15px] font-medium leading-8 text-white/70 lg:text-[17px]`}>{t(STR.about.quality)}</p>
           </motion.div>
@@ -194,7 +193,7 @@ function Section({ children }: { children: React.ReactNode }) {
 
 function Kicker({ children, font }: { children: React.ReactNode; font: string; color?: string }) {
   return (
-    <span className={`${font} inline-flex items-center gap-2 text-[13px] font-extrabold uppercase tracking-widest text-behrouz-red`}>
+    <span className={`${font} inline-flex items-center gap-2 text-[13px] font-extrabold text-behrouz-red ${font === "font-montserrat" ? "uppercase tracking-widest" : "tracking-normal"}`}>
       <span className="h-px w-6 bg-behrouz-red" />
       {children}
     </span>

@@ -1,0 +1,37 @@
+diff --git a/node_modules/@payloadcms/db-postgres/dist/index.js b/node_modules/@payloadcms/db-postgres/dist/index.js
+index 6cc7f79..d58de76 100644
+--- a/node_modules/@payloadcms/db-postgres/dist/index.js
++++ b/node_modules/@payloadcms/db-postgres/dist/index.js
+@@ -1,11 +1,30 @@
+ import { beginTransaction, buildCreateMigration, commitTransaction, count, countGlobalVersions, countVersions, create, createBlocksToJsonMigrator, createGlobal, createGlobalVersion, createSchemaGenerator, createVersion, deleteMany, deleteOne, deleteVersions, destroy, find, findDistinct, findGlobal, findGlobalVersions, findOne, findVersions, migrate, migrateDown, migrateFresh, migrateRefresh, migrateReset, migrateStatus, operatorMap, queryDrafts, rollbackTransaction, updateGlobal, updateGlobalVersion, updateJobs, updateMany, updateOne, updateVersion, upsert } from '@payloadcms/drizzle';
+-import { columnToCodeConverter, countDistinct, createDatabase, createExtensions, createJSONQuery, defaultDrizzleSnapshot, deleteWhere, dropDatabase, execute, init, insert, requireDrizzleKit } from '@payloadcms/drizzle/postgres';
++import { columnToCodeConverter, countDistinct, createDatabase, createExtensions, createJSONQuery, defaultDrizzleSnapshot, deleteWhere, dropDatabase, execute, init, insert } from '@payloadcms/drizzle/postgres';
+ import { pgEnum, pgSchema, pgTable } from 'drizzle-orm/pg-core';
+-import { createDatabaseAdapter, defaultBeginTransaction, findMigrationDir } from 'payload';
++import { createDatabaseAdapter, defaultBeginTransaction, dynamicImport, findMigrationDir } from 'payload';
+ import pgDependency from 'pg';
+ import { fileURLToPath } from 'url';
+ import { connect } from './connect.js';
+ const filename = fileURLToPath(import.meta.url);
++let drizzleKitPromise;
++const loadDrizzleKit = ()=>{
++    drizzleKitPromise ??= dynamicImport('drizzle-kit/api').then(({ generateDrizzleJson, generateMigration, pushSchema, upPgSnapshot: upSnapshot })=>({
++            generateDrizzleJson,
++            generateMigration,
++            pushSchema,
++            upSnapshot
++        })).catch((error)=>{
++        drizzleKitPromise = undefined;
++        throw error;
++    });
++    return drizzleKitPromise;
++};
++const requireDrizzleKit = ()=>({
++        generateDrizzleJson: async (...args)=>(await loadDrizzleKit()).generateDrizzleJson(...args),
++        generateMigration: async (...args)=>(await loadDrizzleKit()).generateMigration(...args),
++        pushSchema: async (...args)=>(await loadDrizzleKit()).pushSchema(...args),
++        upSnapshot: async (...args)=>(await loadDrizzleKit()).upSnapshot(...args)
++    });
+ export function postgresAdapter(args) {
+     const postgresIDType = args.idType || 'serial';
+     const payloadIDType = postgresIDType === 'serial' ? 'number' : 'text';

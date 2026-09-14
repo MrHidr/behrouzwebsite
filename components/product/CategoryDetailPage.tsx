@@ -3,13 +3,15 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { CATEGORY_SCENES, PRODUCT_CATEGORIES, type ScenePos } from "@/lib/site";
+import type { ScenePos } from "@/lib/site";
 import type { Bi, Locale } from "@/lib/i18n";
 import { STR } from "@/lib/i18n";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import type { CatalogCategory, CatalogProduct, ProductVariant } from "@/lib/catalog";
 import { BarcodeIcon, CubeIcon, WeightIcon } from "@/components/ui/icons";
 import { CategoryNavRow } from "./CategoryNavRow";
+import { CatalogDownloadWidget } from "@/components/catalog/CatalogDownloadWidget";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -17,6 +19,12 @@ const faDigits = (s: string) => s.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[+
 const seqLabel = (n: number, locale: Locale) => {
   const s = String(n).padStart(2, "0");
   return locale === "fa" ? faDigits(s) : s;
+};
+
+const EMPTY_VARIANT: ProductVariant = {
+  weight: { fa: "", en: "" },
+  size: { fa: "", en: "" },
+  code: "",
 };
 
 /** Blends a hex colour with white at `amount` (0–1) into a fully OPAQUE hex —
@@ -48,6 +56,7 @@ type Block =
 
 export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
   const { locale, t } = useLocale();
+  const { productCategories } = useCMSContent();
   const en = locale === "en";
   const font = en ? "font-montserrat" : "font-yekan";
   const [mobile, setMobile] = useState(false);
@@ -64,13 +73,14 @@ export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
     return () => mq.removeEventListener("change", on);
   }, []);
 
-  const scene = data.hasScene ? CATEGORY_SCENES[data.slug] : undefined;
+  const scene = data.hasScene ? data.scene : undefined;
   const multiSub = data.subs.length > 1;
 
   const scrollTo = (id: string) => {
     document.getElementById(`sub-${id}`)?.scrollIntoView({ behavior: "smooth" });
   };
   const bottleSubId = (i: number) => (multiSub ? data.subs[i]?.id : data.subs[0]?.id);
+  const sceneSubIds = new Set(scene?.products.map((product, index) => product.subId ?? bottleSubId(index)).filter(Boolean));
 
   // Flatten each sub into variant-level cards, chunked ≤2 per screen.
   // Dividers exist only between sub-categories (multi-sub pages); the last
@@ -83,15 +93,16 @@ export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
     if (multiSub) {
       blocks.push({ kind: "divider", z: z++, subId: sub.id, title: sub.sectionTitle, color: sub.color, first: si === 0 });
     }
-    const cards: Card[] = sub.products.flatMap((p) =>
-      p.variants.map((v) => ({
+    const cards: Card[] = sub.products.flatMap((p) => {
+      const variants = p.variants.length ? p.variants : [EMPTY_VARIANT];
+      return variants.map((v) => ({
         product: p,
         variant: v,
         multi: p.variants.length > 1,
         seq: 0,
         total: 0,
-      }))
-    );
+      }));
+    });
     cards.forEach((c, i) => {
       c.seq = i + 1;
       c.total = cards.length;
@@ -131,6 +142,7 @@ export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
 
   return (
     <div className="relative">
+      <CatalogDownloadWidget category={{ slug: data.slug, title: data.title }} />
       {/* ============ HERO ============ */}
       <section className="relative flex h-[100svh] min-h-[640px] w-full flex-col overflow-hidden bg-[#2a0a0a] max-lg:landscape:min-h-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -146,7 +158,7 @@ export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
                 const pos: ScenePos = mobile ? p.m : p.d;
                 const desktopLeft = [16, 30, 44][i] ?? pos.left * 0.55;
                 const left = mobile ? pos.left : desktopLeft;
-                const subId = bottleSubId(i);
+                const subId = p.subId ?? bottleSubId(i);
                 const focused = hovered === subId;
                 const dimmed = hovered !== null && !focused;
                 const amp = (mobile ? 6 : 11) + i * 2;
@@ -205,7 +217,7 @@ export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
             <span className={`hidden shrink-0 px-3 text-[13px] font-extrabold text-white sm:block ${font}`}>
               {t(STR.nav.productsMenuTitle)}
             </span>
-            {PRODUCT_CATEGORIES.map((c) => (
+            {productCategories.map((c) => (
               <Link
                 key={c.slug}
                 href={`/products/${c.slug}`}
@@ -256,7 +268,7 @@ export function CategoryDetailPage({ data }: { data: CatalogCategory }) {
                   <button
                     key={s.id}
                     type="button"
-                    onMouseEnter={() => setHovered(s.id)}
+                    onMouseEnter={() => setHovered(sceneSubIds.has(s.id) ? s.id : null)}
                     onMouseLeave={() => setHovered(null)}
                     onClick={() => scrollTo(s.id)}
                     className={`shrink-0 whitespace-nowrap rounded-[32px] px-4 py-3 ${font} text-[15px] font-medium text-white backdrop-blur-md transition-colors duration-300 lg:text-[16px]`}
@@ -466,26 +478,30 @@ function ProductCard({
     </motion.span>
   );
 
-  const subtitle = (
+  const subtitleText = t(product.subtitle).trim();
+  const ingredientsText = t(product.ingredients).trim();
+  const hasSpecs = Boolean(variant.code || t(variant.weight).trim() || t(variant.size).trim());
+
+  const subtitle = subtitleText && (
     <motion.p variants={cardItem} className={`mt-2 ${font} text-[17px] font-medium text-behrouz-ink/55 lg:text-[19px]`}>
-      {t(product.subtitle)}
+      {subtitleText}
     </motion.p>
   );
 
   const feature = product.feature && (
-    <motion.p variants={cardItem} className={`mt-2 ${font} text-[13px] font-extrabold`} style={{ color }}>
+    <motion.p variants={cardItem} className={`mt-2 ${font} text-[13px] font-extrabold lg:text-[15px]`} style={{ color }}>
       {t(product.feature)}
     </motion.p>
   );
 
-  const ingredients = (
-    <motion.p variants={cardItem} className={`mt-3 max-w-[520px] ${font} text-[13.5px] font-medium leading-7 text-behrouz-ink/65`}>
+  const ingredients = ingredientsText && (
+    <motion.p variants={cardItem} className={`mt-3 max-w-[520px] ${font} text-[13.5px] font-medium leading-7 text-behrouz-ink/65 lg:text-[16px] lg:leading-8`}>
       <span className="font-extrabold text-behrouz-ink/45">{t(STR.common.ingredients)}: </span>
-      {t(product.ingredients)}
+      {ingredientsText}
     </motion.p>
   );
 
-  const specs = (
+  const specs = hasSpecs && (
     <motion.div variants={cardItem} className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
       <Spec icon={<BarcodeIcon className="size-5" />} color={color} label={t(STR.common.code)} value={variant.code} latin />
       <Spec icon={<WeightIcon className="size-5" />} color={color} label={t(STR.common.weight)} value={t(variant.weight)} />
@@ -497,7 +513,8 @@ function ProductCard({
     <HoverMedia
       image={product.image}
       video={product.hoverVideo}
-      alt={t(product.subtitle)}
+      displaySize={product.mediaDisplaySize || "normal"}
+      alt={subtitleText || t(product.name)}
       heightClass={imgH}
       placeholderLetter={t(product.name).slice(0, 1)}
       placeholderColor={color}
@@ -512,16 +529,23 @@ function ProductCard({
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.25 }}
-        className="flex flex-col-reverse items-center gap-10 lg:flex-row lg:items-center lg:justify-center lg:gap-16"
+        className="grid w-full grid-cols-1 items-center gap-y-8 lg:grid-cols-[42%_52%] lg:grid-rows-[auto_auto] lg:justify-center lg:gap-x-16 lg:gap-y-0"
       >
-        <motion.div variants={cardItem} className="w-full max-w-[440px] shrink-0 lg:w-[42%]">
-          {media}
-        </motion.div>
-        <div className="flex w-full flex-col items-center text-center lg:w-[52%] lg:items-start lg:text-start">
+        <div className="order-1 flex w-full flex-col items-center text-center lg:col-start-2 lg:row-start-1 lg:items-start lg:text-start">
           {kicker}
           {name}
           {chip}
           {subtitle}
+        </div>
+
+        <motion.div
+          variants={cardItem}
+          className="order-2 mx-auto w-full max-w-[440px] shrink-0 lg:col-start-1 lg:row-span-2 lg:row-start-1"
+        >
+          {media}
+        </motion.div>
+
+        <div className="order-3 flex w-full flex-col items-center text-center lg:col-start-2 lg:row-start-2 lg:items-start lg:text-start">
           {feature}
           {ingredients}
           {specs}
@@ -565,11 +589,12 @@ function ProductCard({
 /* Product media: no shadow, a slight contrast lift (1.1), and no decorative
    background art — activation just plays the video / lifts the image.
 
-   The splash videos run as a forward→reverse "boomerang" while ACTIVE:
-   forward at 1×, then a fast (4×) reverse back to frame 0, then forward again.
-   Deactivating mid-forward starts the fast reverse; deactivating mid-reverse
-   just lets it finish to frame 0. Re-activating mid-reverse also lets it reach
-   frame 0 first, then plays forward — the reverse leg is never interrupted.
+   Each product asset contains forward + reverse frames in one video. This lets
+   the browser decode both directions natively instead of repeatedly seeking
+   currentTime (which stutters on keyframe-compressed video, especially on
+   phones). While active it loops at 1×. Deactivation maps a forward frame once
+   to its identical frame on the reverse half, then plays natively at 4× until
+   frame 0. If already reversing, only playbackRate changes.
 
    What counts as "active":
    - fine pointers (desktop): hover;
@@ -579,6 +604,7 @@ function ProductCard({
 function HoverMedia({
   image,
   video,
+  displaySize,
   alt,
   heightClass,
   placeholderLetter,
@@ -586,6 +612,7 @@ function HoverMedia({
 }: {
   image?: string;
   video?: string;
+  displaySize: "small" | "normal" | "large";
   alt: string;
   heightClass: string;
   placeholderLetter: string;
@@ -595,55 +622,83 @@ function HoverMedia({
   const [hovered, setHovered] = useState(false);
   const vRef = useRef<HTMLVideoElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef(0);
-  const rewinding = useRef(false);
   const activeRef = useRef(false);
+  const mediaHeight = displaySize === "large" ? "105%" : displaySize === "small" ? "95%" : "100%";
 
-  const playForward = () => {
-    cancelAnimationFrame(rafRef.current);
-    rewinding.current = false;
-    vRef.current?.play().catch(() => {});
+  const playActive = () => {
+    const v = vRef.current;
+    if (!v || !activeRef.current) return;
+    v.loop = true;
+    v.playbackRate = 1;
+    if (v.ended) v.currentTime = 0;
+    v.play().catch(() => {});
   };
 
-  /** Fast (4×) reverse to frame 0; when it lands, loop forward again if still active. */
-  const rewindToStart = () => {
+  const resetToStart = () => {
     const v = vRef.current;
-    if (!v || rewinding.current) return;
+    if (!v) return;
+    v.loop = false;
     v.pause();
-    if (v.currentTime <= 0.03) return;
-    rewinding.current = true;
-    let last = performance.now();
-    const step = (now: number) => {
-      if (!rewinding.current || !vRef.current) return;
-      const dt = (now - last) / 1000;
-      last = now;
-      const next = vRef.current.currentTime - dt * 4; // 4× fast rewind
-      if (next <= 0.03) {
-        try { vRef.current.currentTime = 0; } catch {}
-        rewinding.current = false;
-        if (activeRef.current) playForward(); // boomerang: forward again
-        return;
-      }
-      try { vRef.current.currentTime = next; } catch {}
-      rafRef.current = requestAnimationFrame(step);
-    };
-    rafRef.current = requestAnimationFrame(step);
+    v.playbackRate = 1;
+    try { v.currentTime = 0; } catch {}
   };
 
   const activate = () => {
     activeRef.current = true;
     setHovered(true);
-    // Mid-reverse: let it reach frame 0 — its completion restarts forward.
-    if (!rewinding.current) playForward();
+    // Re-hovering during the return keeps its direction and simply restores
+    // natural speed; the baked timeline loops into the next forward leg.
+    playActive();
   };
   const deactivate = () => {
     activeRef.current = false;
     setHovered(false);
-    // Mid-reverse: nothing to do — it finishes to frame 0 and stops there.
-    if (!rewinding.current) rewindToStart();
+    const v = vRef.current;
+    if (!v) return;
+
+    v.loop = false;
+    if (!Number.isFinite(v.duration) || v.currentTime <= 0.02) {
+      resetToStart();
+      return;
+    }
+
+    const midpoint = v.duration / 2;
+    if (v.currentTime < midpoint) {
+      // Both halves contain the same frames in opposite order. This lands on
+      // the visually identical frame, but on the natively decodable return leg.
+      v.currentTime = Math.min(v.duration - 0.02, v.duration - v.currentTime);
+    }
+    v.playbackRate = 4;
+    v.play().catch(() => resetToStart());
   };
 
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+  useEffect(() => () => {
+    activeRef.current = false;
+    vRef.current?.pause();
+  }, []);
+
+  // Warm only videos near the viewport. The baked reverse half must be locally
+  // buffered before a forward-frame hover-out can jump to its mirrored frame;
+  // preloading every product on a long category page would waste bandwidth.
+  useEffect(() => {
+    if (!video) return;
+    const wrap = wrapRef.current;
+    const v = vRef.current;
+    if (!wrap || !v) return;
+
+    const preloadObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || v.preload === "auto") return;
+        v.preload = "auto";
+        // Re-evaluate the new preload hint while the video is still idle.
+        if (!activeRef.current && v.paused && v.currentTime === 0) v.load();
+        preloadObserver.disconnect();
+      },
+      { rootMargin: "300px 0px" }
+    );
+    preloadObserver.observe(wrap);
+    return () => preloadObserver.disconnect();
+  }, [video]);
 
   // Coarse-pointer autoplay: drive activation from viewport visibility.
   useEffect(() => {
@@ -666,6 +721,7 @@ function HoverMedia({
   }, [video]);
 
   if (video) {
+    const smoothVideo = video.replace(/\.mp4$/i, "-loop.mp4");
     return (
       <div
         ref={wrapRef}
@@ -679,12 +735,16 @@ function HoverMedia({
           playsInline
           preload="metadata"
           poster={image}
-          onEnded={rewindToStart} // end of the forward leg → fast reverse
+          onEnded={() => {
+            if (activeRef.current) playActive();
+            else resetToStart();
+          }}
           animate={{ scale: hovered ? 1.05 : 1, y: hovered ? -8 : 0 }}
           transition={{ duration: 0.5, ease }}
           className="h-full w-auto select-none object-contain contrast-[1.1]"
+          style={{ height: mediaHeight }}
         >
-          <source src={video} type="video/mp4" />
+          <source src={smoothVideo} type="video/mp4" />
         </motion.video>
       </div>
     );
@@ -699,6 +759,7 @@ function HoverMedia({
           animate={{ scale: hovered ? 1.06 : 1, y: hovered ? -10 : 0 }}
           transition={{ duration: 0.5, ease }}
           className="h-full w-auto select-none object-contain contrast-[1.1]"
+          style={{ height: mediaHeight }}
           draggable={false}
         />
       </div>

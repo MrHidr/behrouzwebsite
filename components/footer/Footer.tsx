@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { SOCIALS } from "@/lib/site";
-import { STR } from "@/lib/i18n";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { AparatIcon, FaxIcon, InstagramIcon, LinkedinIcon, MailIcon, PhoneIcon } from "@/components/ui/icons";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
+import { ProtectedContactValue } from "@/components/contact/ProtectedContactValue";
+import { toLatinDigits } from "@/lib/locale-digits";
 
 const reveal = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 const SOCIAL_ICON = {
@@ -18,16 +19,23 @@ const SOCIAL_ICON = {
   aparat: AparatIcon,
 } as const;
 
+const CONTACT_ICON = {
+  phone: PhoneIcon,
+  fax: FaxIcon,
+  email: MailIcon,
+} as const;
+
 export function Footer() {
   const { locale, t } = useLocale();
+  const { brand, footer, socials } = useCMSContent();
   const font = locale === "en" ? "font-montserrat" : "font-yekan";
 
-  const items = [
-    { label: t(STR.footer.centralPhone), value: "021-44536090", href: "tel:+982144536090", Icon: PhoneIcon },
-    { label: t(STR.footer.factoryPhone), value: "026-34373500", href: "tel:+982634373500", Icon: PhoneIcon },
-    { label: t(STR.footer.fax), value: "021-44536092", href: "tel:+982144536092", Icon: FaxIcon },
-    { label: t(STR.footer.email), value: "Info@behrouznik.com", href: "mailto:Info@behrouznik.com", Icon: MailIcon },
-  ];
+  const items = footer.contacts.map((item) => ({
+    label: t(item.label),
+    value: item.value,
+    type: item.type,
+    Icon: CONTACT_ICON[item.type],
+  }));
 
   return (
     <footer className="w-full">
@@ -46,11 +54,12 @@ export function Footer() {
               : "text-[30px] uppercase sm:text-[44px] lg:text-[60px]"
           }`}
         >
-          {t(STR.footer.heading)}
+          {t(footer.heading)}
         </h2>
         <div className="flex items-center gap-5">
-          {SOCIALS.map((s) => {
-            const Icon = SOCIAL_ICON[s.name];
+          {socials.map((s) => {
+            const Icon = SOCIAL_ICON[s.name as keyof typeof SOCIAL_ICON];
+            if (!Icon) return null;
             return (
               <a
                 key={s.name}
@@ -77,32 +86,36 @@ export function Footer() {
           className="mx-auto grid max-w-[1100px] grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
         >
           {items.map((it, i) => (
-            <a
+            <div
               key={i}
-              href={it.href}
               className="group flex items-center gap-4 rounded-2xl bg-black/[0.08] px-5 py-4 transition-colors duration-300 hover:bg-black/[0.14]"
             >
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/20 text-white transition-colors duration-300 group-hover:bg-white/30">
                 <it.Icon className="size-5" />
               </span>
               <span className="flex flex-col gap-0.5">
-                <span className={`${font} text-[13px] font-bold uppercase tracking-wide text-white/60 lg:text-[14px]`}>
+                <span className={`${font} text-[13px] font-bold text-white/60 lg:text-[14px] ${locale === "en" ? "uppercase tracking-wide" : "tracking-normal"}`}>
                   {it.label}
                 </span>
-                <span dir="ltr" className="break-all font-montserrat text-[13px] font-black text-white lg:text-[15px]">
-                  {it.value}
-                </span>
+                <ProtectedContactValue
+                  value={it.type === "phone" ? toLatinDigits(it.value).replace(/[^0-9+]/g, "") : it.value}
+                  kind={it.type === "email" ? "email" : it.type === "phone" ? "phone" : "copy"}
+                  label={it.type === "email" ? `${it.label}؛ ارسال ایمیل` : it.type === "phone" ? `${it.label}؛ تماس` : `${it.label}؛ کپی`}
+                  color="#ffffff"
+                  fontSize={15}
+                  className="max-w-full overflow-hidden text-start"
+                />
               </span>
-            </a>
+            </div>
           ))}
         </motion.div>
       </div>
 
       {/* copyright (dark) */}
       <div className="flex flex-col items-center gap-3 bg-behrouz-ink px-6 py-7">
-        <Image src="/media/site/logo-wordmark-white.webp" alt="Behrouz" width={174} height={48} className="h-11 w-auto" />
+        <Image src={brand.logo} alt="Behrouz" width={72} height={72} className="size-16 object-contain" />
         <p className={`text-center ${font} text-[13px] text-white/90 lg:text-[14px]`}>
-          {t(STR.footer.copyright)}
+          {t(footer.copyright)}
         </p>
       </div>
     </footer>

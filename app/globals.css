@@ -23,6 +23,13 @@ body {
   overflow-x: clip;
 }
 
+/* Persian glyphs are connected; Latin-style tracking creates artificial gaps,
+   especially at narrow mobile widths. Keep Persian copy naturally spaced. */
+[dir="rtl"] .font-yekan {
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
 /* Latin runs inside Persian text pick up Montserrat automatically. */
 :lang(en) {
   font-family: var(--font-montserrat), var(--font-yekan), sans-serif;

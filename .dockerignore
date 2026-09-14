@@ -1,0 +1,11 @@
+.git
+.next
+.open-next
+.wrangler
+node_modules
+tmp
+New Product assets
+*.log
+.env
+.env.*
+!.env.example

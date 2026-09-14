@@ -4,18 +4,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  CATEGORY_SCENES,
   DEFAULT_SCENE_BG,
-  SHOWCASE_CATEGORIES,
-  SHOWCASE_DEFAULT,
   type ScenePos,
 } from "@/lib/site";
 import { STR } from "@/lib/i18n";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
-
-const CATS = SHOWCASE_CATEGORIES;
-const N = CATS.length;
+import { CatalogDownloadWidget } from "@/components/catalog/CatalogDownloadWidget";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 
 const spring = { type: "spring" as const, stiffness: 260, damping: 34 };
 
@@ -49,8 +45,18 @@ function useLockedHeight() {
 
 export function CategorySection() {
   const { locale, t } = useLocale();
+  const { productCategories, categoryScenes } = useCMSContent();
+  const cats = productCategories.map((category) => ({
+    fa: category.label,
+    en: category.labelEn,
+    slug: category.slug,
+  }));
+  const count = cats.length;
   const en = locale === "en";
-  const [active, setActive] = useState(SHOWCASE_DEFAULT);
+  const [active, setActive] = useState(() => {
+    const sauces = cats.findIndex((category) => category.slug === "sauces");
+    return sauces >= 0 ? sauces : 0;
+  });
   const [mobile, setMobile] = useState(false);
   const lockedH = useLockedHeight();
 
@@ -78,11 +84,11 @@ export function CategorySection() {
   const offsetFor = (d: number) =>
     d === 0 ? 0 : Math.sign(d) * (GAP1 + (Math.abs(d) - 1) * GAP2);
 
-  const wrap = (i: number) => ((i % N) + N) % N;
+  const wrap = (i: number) => ((i % count) + count) % count;
   const dist = (i: number) => {
     let d = i - active;
-    d = ((d % N) + N) % N;
-    if (d > N / 2) d -= N;
+    d = ((d % count) + count) % count;
+    if (d > count / 2) d -= count;
     return d;
   };
   const scaleFor = (d: number) => (d === 0 ? 1 : Math.abs(d) === 1 ? 0.7 : 0.4);
@@ -118,8 +124,8 @@ export function CategorySection() {
     }
   };
 
-  const cat = CATS[active];
-  const scene = CATEGORY_SCENES[cat.slug];
+  const cat = cats[active] || cats[0];
+  const scene = categoryScenes[cat.slug];
   const bg = scene?.bg ?? DEFAULT_SCENE_BG;
 
   // Desktop: 8% taller than viewport so bottles clear the category titles and
@@ -250,7 +256,7 @@ export function CategorySection() {
       </motion.p>
 
       {/* ---------- Category rail (smooth draggable slider) ---------- */}
-      <div className="relative z-30 mt-1 h-[120px] w-full overflow-hidden lg:h-[150px]">
+      <div dir="ltr" className="relative z-30 mt-1 h-[120px] w-full overflow-hidden lg:h-[150px]">
         <motion.div
           className="absolute inset-0 cursor-grab touch-pan-y active:cursor-grabbing"
           drag="x"
@@ -262,7 +268,7 @@ export function CategorySection() {
             if (steps) setActive(wrap(active - steps));
           }}
         >
-          {CATS.map((c, i) => {
+          {cats.map((c, i) => {
             const d = dist(i);
             const hidden = Math.abs(d) > 2;
             return (
@@ -280,6 +286,7 @@ export function CategorySection() {
                 <div className="-translate-x-1/2 -translate-y-1/2">
                   <motion.button
                     type="button"
+                    dir={en ? "ltr" : "rtl"}
                     onClick={() => setActive(i)}
                     aria-label={en ? c.en : c.fa}
                     aria-current={d === 0}
@@ -321,16 +328,16 @@ export function CategorySection() {
       {/* arrows (desktop) */}
       <button
         type="button"
-        onClick={() => setActive(wrap(active - 1))}
-        aria-label="قبلی"
+        onClick={() => setActive(wrap(active + (en ? -1 : 1)))}
+        aria-label={en ? "Previous category" : "دسته بعدی"}
         className="absolute left-3 top-1/2 z-40 hidden size-12 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white backdrop-blur transition-colors duration-300 hover:bg-white/25 lg:grid xl:left-8"
       >
         <ChevronLeft />
       </button>
       <button
         type="button"
-        onClick={() => setActive(wrap(active + 1))}
-        aria-label="بعدی"
+        onClick={() => setActive(wrap(active + (en ? 1 : -1)))}
+        aria-label={en ? "Next category" : "دسته قبلی"}
         className="absolute right-3 top-1/2 z-40 hidden size-12 -translate-y-1/2 place-items-center rounded-full bg-white/15 text-white backdrop-blur transition-colors duration-300 hover:bg-white/25 lg:grid xl:right-8"
       >
         <ChevronRight />
@@ -338,7 +345,7 @@ export function CategorySection() {
 
       {/* dots (mobile) */}
       <div className="relative z-30 mt-4 flex justify-center gap-2 lg:hidden">
-        {CATS.map((c, i) => (
+        {cats.map((c, i) => (
           <button
             key={c.slug}
             type="button"
@@ -352,6 +359,8 @@ export function CategorySection() {
           />
         ))}
       </div>
+
+      <CatalogDownloadWidget mode="inline" />
     </section>
   );
 }

@@ -49,14 +49,42 @@ export function MailIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function UpRightBox(props: SVGProps<SVGSVGElement>) {
+export function UpRightBox({ rtl = false, ...props }: SVGProps<SVGSVGElement> & { rtl?: boolean }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" width="24" height="24" aria-hidden {...props}>
       <rect x="3" y="3" width="18" height="18" rx="6" stroke="currentColor" strokeWidth="1.6" />
       <path
-        d="M9 15 15 9M15 9H10M15 9V14"
+        d={rtl ? "M15 15 9 9M9 9h5M9 9v5" : "M9 15 15 9M15 9H10M15 9V14"}
         stroke="currentColor"
         strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function ArrowForward({ rtl = false, ...props }: SVGProps<SVGSVGElement> & { rtl?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="24" height="24" aria-hidden {...props}>
+      <path
+        d={rtl ? "M19 12H5M11 6l-6 6 6 6" : "M5 12h14M13 6l6 6-6 6"}
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function ArrowUpForward({ rtl = false, ...props }: SVGProps<SVGSVGElement> & { rtl?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="24" height="24" aria-hidden {...props}>
+      <path
+        d={rtl ? "M17 17 7 7M7 7h8M7 7v8" : "M7 17 17 7M17 7H9M17 7v8"}
+        stroke="currentColor"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -103,18 +131,16 @@ export function AparatIcon(props: SVGProps<SVGSVGElement>) {
     <svg viewBox="0 0 24 24" fill="none" width="24" height="24" aria-hidden {...props}>
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
       <circle cx="12" cy="12" r="3.4" stroke="currentColor" strokeWidth="1.8" />
-      {[0, 60, 120, 180, 240, 300].map((a) => {
-        const r = (a * Math.PI) / 180;
-        return (
-          <circle
-            key={a}
-            cx={12 + Math.cos(r) * 7}
-            cy={12 + Math.sin(r) * 7}
-            r="0.9"
-            fill="currentColor"
-          />
-        );
-      })}
+      {[
+        [19, 12],
+        [15.5, 18.0622],
+        [8.5, 18.0622],
+        [5, 12],
+        [8.5, 5.9378],
+        [15.5, 5.9378],
+      ].map(([cx, cy], index) => (
+        <circle key={index} cx={cx} cy={cy} r="0.9" fill="currentColor" />
+      ))}
     </svg>
   );
 }

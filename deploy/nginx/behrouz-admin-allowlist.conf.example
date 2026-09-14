@@ -1,0 +1,5 @@
+# Copy to /etc/nginx/snippets/behrouz-admin-allowlist.conf and replace the
+# documentation-only address below with the company's fixed IP/VPN subnet.
+# Include it inside both `location ^~ /admin` and `location ^~ /api/users`.
+allow 203.0.113.10;
+deny all;

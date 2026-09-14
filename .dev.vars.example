@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local Cloudflare/D1 development.
+PAYLOAD_SECRET=development-secret-change-me
+SERVER_URL=http://localhost:3000
+CMS_ALLOWED_ORIGINS=http://localhost:3000
+RESEND_API_KEY=
+EMAIL_FROM_ADDRESS=cms@localhost.invalid
+EMAIL_FROM_NAME=Behrouz CMS

@@ -1,0 +1,38 @@
+# Temporary HTTP/IP test configuration. Replace this with HTTPS for production.
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    client_max_body_size 26m;
+
+    location = /api/careers/apply {
+        client_max_body_size 22m;
+        limit_req zone=behrouz_careers burst=2 nodelay;
+        include /etc/nginx/snippets/behrouz-proxy.conf;
+    }
+
+    location = /api/users/login {
+        limit_req zone=behrouz_login burst=3 nodelay;
+        include /etc/nginx/snippets/behrouz-proxy.conf;
+    }
+
+    location = /api/users/forgot-password {
+        limit_req zone=behrouz_login burst=2 nodelay;
+        include /etc/nginx/snippets/behrouz-proxy.conf;
+    }
+
+    location = /api/users/first-register {
+        limit_req zone=behrouz_login burst=2 nodelay;
+        include /etc/nginx/snippets/behrouz-proxy.conf;
+    }
+
+    location = /api/users/reset-password {
+        limit_req zone=behrouz_login burst=2 nodelay;
+        include /etc/nginx/snippets/behrouz-proxy.conf;
+    }
+
+    location / {
+        include /etc/nginx/snippets/behrouz-proxy.conf;
+    }
+}

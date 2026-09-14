@@ -1,4 +1,6 @@
-import { CATEGORY_SCENES } from "@/lib/site";
+"use client";
+
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 
 /** Generic 3-item cluster placement inside the disc (left / centre-forward /
  *  right), reused for every scene category. `width` is deliberately generous
@@ -40,7 +42,8 @@ export function CategoryCircle({
   color: string;
   buttonImage?: string;
 }) {
-  const scene = CATEGORY_SCENES[slug];
+  const { categoryScenes } = useCMSContent();
+  const scene = categoryScenes[slug];
   const products = buttonImage ? null : scene?.products?.slice(0, 3);
 
   return (

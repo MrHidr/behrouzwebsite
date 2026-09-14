@@ -67,7 +67,7 @@ export function HeroStage({ children }: { children: React.ReactNode }) {
           </motion.div>
         </section>
 
-        {/* opaque content (About) slides over the pinned video */}
+        {/* the first opaque home section slides over the pinned video */}
         {children}
       </div>
     </div>

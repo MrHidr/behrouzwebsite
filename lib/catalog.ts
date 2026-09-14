@@ -27,6 +27,8 @@ export type CatalogProduct = {
   image?: string;
   /** optional short loop played on hover (CGI splash animation) */
   hoverVideo?: string;
+  /** Visual scale shared by the poster and hover video. */
+  mediaDisplaySize?: "small" | "normal" | "large";
   /** every size/pack — each variant renders as its OWN card on the page */
   variants: ProductVariant[];
 };
@@ -51,6 +53,8 @@ export type CatalogCategory = {
   /** optional editorial rhythm: every Nth card (1-based) renders alone/full-width
    *  instead of paired up, e.g. 5 -> pairs, pairs, single, pairs, pairs, single... */
   fullWidthEvery?: number;
+  /** CMS-provided hero scene; static content falls back to CATEGORY_SCENES. */
+  scene?: import("./site").CategoryScene;
   subs: CatalogSub[];
 };
 
@@ -100,6 +104,7 @@ const SAUCES: CatalogCategory = {
           ingredients: KETCHUP_ING,
           image: "/media/sauces/tomato-ketchup-poster.webp",
           hoverVideo: "/media/sauces/tomato-ketchup.mp4",
+          mediaDisplaySize: "small",
           variants: [{ weight: g(395), size: cm("20x7"), code: "6261177002158" }],
         },
         {
@@ -109,6 +114,7 @@ const SAUCES: CatalogCategory = {
           ingredients: KETCHUP_ING,
           image: "/media/sauces/tomato-ketchup-large-poster.webp",
           hoverVideo: "/media/sauces/tomato-ketchup-large.mp4",
+          mediaDisplaySize: "large",
           variants: [{ weight: g(640), size: cm("23x8"), code: "6261177002165" }],
         },
         {
@@ -140,8 +146,8 @@ const SAUCES: CatalogCategory = {
     },
     {
       id: "dips",
-      label: { fa: "دیپ‌ها", en: "Dips" },
-      sectionTitle: { fa: "دیپ‌ها", en: "Dips" },
+      label: { fa: "سس‌های فلفلی", en: "Chili Sauces" },
+      sectionTitle: { fa: "سس‌های فلفلی", en: "Chili Sauces" },
       color: "#8a3b12",
       products: [
         {
@@ -149,7 +155,7 @@ const SAUCES: CatalogCategory = {
           name: { fa: "زیتون در چیلی", en: "Olive in Chili" },
           subtitle: { fa: "زیتون در سس چیلی", en: "Olives in Chili Sauce" },
           ingredients: {
-            fa: "زیتون، پوره فلفل قرمز، سرکه، نمک تصفیه شده خوراکی، روفن سویا (تراریخته)، شکر، رب گوجه فرنگی، پوره سیر، اسید سیتریک.",
+            fa: "زیتون، پوره فلفل قرمز، سرکه، نمک تصفیه شده خوراکی، روغن سویا (تراریخته)، شکر، رب گوجه فرنگی، پوره سیر، اسید سیتریک.",
             en: "Olives, red pepper purée, vinegar, refined edible salt, soybean oil, sugar, tomato paste, garlic purée, citric acid.",
           },
           image: "/media/sauces/olive-chili-poster.webp",
@@ -161,7 +167,7 @@ const SAUCES: CatalogCategory = {
           name: { fa: "زیتون در چیلی", en: "Olive in Chili" },
           subtitle: { fa: "زیتون در سس چیلی (کوچک)", en: "Olives in Chili Sauce (small)" },
           ingredients: {
-            fa: "زیتون، پوره فلفل قرمز، سرکه، نمک تصفیه شده خوراکی، روفن سویا (تراریخته)، شکر، رب گوجه فرنگی، پوره سیر، اسید سیتریک.",
+            fa: "زیتون، پوره فلفل قرمز، سرکه، نمک تصفیه شده خوراکی، روغن سویا (تراریخته)، شکر، رب گوجه فرنگی، پوره سیر، اسید سیتریک.",
             en: "Olives, red pepper purée, vinegar, refined edible salt, soybean oil, sugar, tomato paste, garlic purée, citric acid.",
           },
           image: "/media/sauces/olive-chili-small-poster.webp",
@@ -170,7 +176,7 @@ const SAUCES: CatalogCategory = {
         },
         {
           id: "chili-sauce",
-          name: { fa: "چیلی", en: "Chili" },
+          name: { fa: "پوره‌ی فلفل", en: "Pepper Purée" },
           subtitle: { fa: "سس فلفل قرمز", en: "Red Chili Sauce" },
           ingredients: {
             fa: "پوره فلفل قرمز، رب گوجه فرنگی، سرکه، نمک تصفیه شده خوراکی، روغن مایع، ادویه‌جات، آب آشامیدنی.",
@@ -178,7 +184,7 @@ const SAUCES: CatalogCategory = {
           },
           image: "/media/sauces/chili-sauce-poster.webp",
           hoverVideo: "/media/sauces/chili-sauce.mp4",
-          variants: [{ weight: g(220), size: cm("3.3x5"), code: "6261177001939" }],
+          variants: [{ weight: g(225), size: cm("3.3x5"), code: "6261177001939" }],
         },
       ],
     },
@@ -333,9 +339,9 @@ const SAUCES: CatalogCategory = {
         },
         {
           id: "dijonnaise",
-          name: { fa: "دیژونیز", en: "Dijonnaise" },
+          name: { fa: "دیجونیز", en: "Dijonnaise" },
           subtitle: {
-            fa: "سس دیژونیز (خردل ملایم، بدون کلسترول)",
+            fa: "سس دیجونیز (خردل ملایم، بدون کلسترول)",
             en: "Dijonnaise (mild mustard, cholesterol-free)",
           },
           ingredients: {
@@ -347,9 +353,19 @@ const SAUCES: CatalogCategory = {
           variants: [{ weight: g(270), size: cm("4x5x21"), code: "6261177000666" }],
         },
         {
+          id: "dijonnaise-squeeze",
+          name: { fa: "دیجونیز", en: "Dijonnaise" },
+          subtitle: { fa: "-", en: "-" },
+          ingredients: { fa: "-", en: "-" },
+          feature: { fa: "-", en: "-" },
+          image: "/media/sauces/dijonnaise-squeeze-poster.webp",
+          hoverVideo: "/media/sauces/dijonnaise-squeeze.mp4",
+          variants: [{ weight: { fa: "-", en: "-" }, size: { fa: "-", en: "-" }, code: "-" }],
+        },
+        {
           id: "low-fat-mayo",
           name: { fa: "مایونز کم‌چرب", en: "Low-Fat Mayo" },
-          subtitle: { fa: "سس مایونز کم چربی", en: "Low-Fat Mayonnaise" },
+          subtitle: { fa: "سس مایونز کم‌چرب", en: "Low-Fat Mayonnaise" },
           ingredients: {
             fa: "روغن مایع، شکر، سرکه، غلیظ‌کننده، نمک تصفیه شده، پودر زرده تخم‌مرغ، کنسانتره لیمو، پودر خردل، اسید سیتریک، بنزوات سدیم و سوربات پتاسیم، آب آشامیدنی.",
             en: "Liquid oil, sugar, vinegar, thickener, refined salt, egg-yolk powder, lemon concentrate, mustard powder, citric acid, sodium benzoate & potassium sorbate, drinking water.",
@@ -545,8 +561,8 @@ const CANNED: CatalogCategory = {
             en: "Pasta & Lasagna Sauce",
           },
           ingredients: {
-            fa: "رب گوجه فرنگی، قارچ، فلفل دلمه‌ای، روغن گیاهی، ادویه‌جات، نمک.",
-            en: "Tomato paste, mushrooms, bell pepper, vegetable oil, spices, salt.",
+            fa: "رب گوجه فرنگی، سویا، قارچ، فلفل دلمه‌ای، روغن گیاهی، ادویه‌جات، نمک.",
+            en: "Tomato paste, soy, mushrooms, bell pepper, vegetable oil, spices, salt.",
           },
           image: "/media/canned/lasagna-sauce-poster.webp",
           hoverVideo: "/media/canned/lasagna-sauce.mp4",
@@ -649,8 +665,8 @@ const PICKLES: CatalogCategory = {
             en: "Sliced Jalapeño Peppers",
           },
           ingredients: {
-            fa: "فلفل هالاپینو، سرکه، ادویه‌جات، نمک.",
-            en: "Jalapeño peppers, vinegar, spices, salt.",
+            fa: "فلفل هالاپینو، سرکه، نمک.",
+            en: "Jalapeño peppers, vinegar, salt.",
           },
           image: "/media/pickles/jalapeno-poster.webp",
           hoverVideo: "/media/pickles/jalapeno.mp4",
@@ -667,8 +683,8 @@ const PICKLES: CatalogCategory = {
             en: "Sliced Jalapeño Peppers (small)",
           },
           ingredients: {
-            fa: "فلفل هالاپینو، سرکه، ادویه‌جات، نمک.",
-            en: "Jalapeño peppers, vinegar, spices, salt.",
+            fa: "فلفل هالاپینو، سرکه، نمک.",
+            en: "Jalapeño peppers, vinegar, salt.",
           },
           image: "/media/pickles/jalapeno-small-poster.webp",
           hoverVideo: "/media/pickles/jalapeno-small.mp4",

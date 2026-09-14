@@ -3,10 +3,9 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ABOUT_MEDIA, BRAND } from "@/lib/site";
-import { STR } from "@/lib/i18n";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { UpRightBox } from "@/components/ui/icons";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 
 // #fefefd, so the fade blends seamlessly into the section background.
 const BLEND = "254,254,253";
@@ -20,6 +19,7 @@ const MOBILE_GRAD = `url("data:image/svg+xml;utf8,<svg viewBox='0 0 653 653' xml
 /** Copy block (logo → title → body → button). Alignment via text-align only. */
 function AboutCopy({ align }: { align: "side" | "center" }) {
   const { locale, t } = useLocale();
+  const { brand, homeAbout } = useCMSContent();
   const en = locale === "en";
   const font = en ? "font-montserrat" : "font-yekan";
   return (
@@ -34,27 +34,30 @@ function AboutCopy({ align }: { align: "side" | "center" }) {
       className={align === "side" ? "text-start" : "text-center"}
     >
       <Image
-        src={BRAND.logo}
+        src={brand.logo}
         alt=""
         width={90}
         height={90}
         className="mb-2 inline-block size-[68px] align-middle lg:size-[90px]"
       />
       <h2 className={`${font} font-extrabold leading-none text-[#302929] ${en ? "text-[34px] lg:text-[52px]" : "text-[40px] lg:text-[64px]"}`}>
-        {t(STR.about.title)}
+        {t(homeAbout.title)}
       </h2>
-      <p className={`mx-auto mt-4 max-w-[42ch] ${font} text-[14.5px] font-normal leading-[1.7] tracking-[-0.01em] text-[#302929] sm:text-[15px] lg:mx-0 lg:mt-5 lg:max-w-none ${en ? "lg:text-[16px]" : "lg:text-[18px]"}`}>
-        {t(STR.about.storyHome)}
+      <p className={`mx-auto mt-4 max-w-[42ch] ${font} text-[14.5px] font-normal leading-[1.7] text-[#302929] sm:text-[15px] lg:mx-0 lg:mt-5 lg:max-w-none ${en ? "tracking-[-0.01em] lg:text-[16px]" : "tracking-normal lg:text-[18px]"}`}>
+        {t(homeAbout.body)}
       </p>
       <div className="mt-6">
         <Link
-          href="/about"
+          href={homeAbout.link}
           className="group inline-flex items-center gap-1.5 rounded-[32px] bg-white p-2.5 align-middle shadow-[0_6px_20px_rgba(0,0,0,0.06)] transition-transform duration-300 hover:-translate-y-0.5"
         >
           <span className={`${font} text-[15px] font-extrabold text-[#f51414] lg:text-[16px]`}>
-            {t(STR.about.cta)}
+            {t(homeAbout.cta)}
           </span>
-          <UpRightBox className="size-6 text-[#f51414] transition-transform duration-300 ease-smooth group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <UpRightBox
+            rtl={!en}
+            className={`size-6 text-[#f51414] transition-transform duration-300 ease-smooth group-hover:-translate-y-0.5 ${en ? "group-hover:translate-x-0.5" : "group-hover:-translate-x-0.5"}`}
+          />
         </Link>
       </div>
     </motion.div>
@@ -67,6 +70,7 @@ function AboutCopy({ align }: { align: "side" | "center" }) {
  * on desktop, top→bottom on mobile (both taken straight from Figma).
  */
 export function AboutSection() {
+  const { homeAbout } = useCMSContent();
   return (
     <section className="relative w-full overflow-hidden bg-[#fefefd]">
       {/* ---------- Desktop ---------- */}
@@ -75,7 +79,7 @@ export function AboutSection() {
         <div className="pointer-events-none absolute right-[-2vw] top-1/2 aspect-square h-[118%] -translate-y-1/2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={ABOUT_MEDIA.image}
+            src={homeAbout.image}
             alt=""
             className="absolute inset-0 size-full select-none object-cover"
             draggable={false}
@@ -106,7 +110,7 @@ export function AboutSection() {
           <div className="pointer-events-none absolute left-1/2 top-0 aspect-square w-[min(150vw,180svh)] max-w-none -translate-x-1/2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={ABOUT_MEDIA.imageMobile}
+              src={homeAbout.mobileImage}
               alt=""
               className="absolute inset-0 size-full select-none object-cover"
               draggable={false}

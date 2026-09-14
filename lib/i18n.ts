@@ -10,31 +10,36 @@ export const dir = (l: Locale): "rtl" | "ltr" => (l === "fa" ? "rtl" : "ltr");
 // Bilingual string table. `fa` is the source of truth; `en` mirrors it.
 export const STR = {
   nav: {
-    home: { fa: "صفحه‌ اصلی", en: "Home" },
+    home: { fa: "صفحه اصلی", en: "Home" },
+    company: { fa: "شرکت بهروز", en: "Company" },
     about: { fa: "درباره بهروز", en: "About" },
+    innovation: { fa: "نوآوری و کیفیت", en: "Innovation & quality" },
+    operations: { fa: "تولید", en: "Production" },
+    distribution: { fa: "پخش بهروز", en: "Behrouz Distribution" },
     products: { fa: "محصولات", en: "Products" },
     contact: { fa: "تماس با ما", en: "Contact" },
+    careers: { fa: "همکاری با ما", en: "Careers" },
     tagline: { fa: "صنایع غذایی", en: "Food Industries" },
     brand: { fa: "بهروز", en: "Behrouz" },
-    productsMenuTitle: { fa: "دسته بندی محصولات", en: "Product categories" },
+    productsMenuTitle: { fa: "دسته‌بندی محصولات", en: "Product categories" },
     productsMenuHint: {
-      fa: "برای مشاهده محصولات هر دسته روی آن کلیک کنید",
-      en: "Click a category to see its products",
+      fa: "یک دسته را انتخاب کنید تا محصولاتش را ببینید",
+      en: "Choose a category to see its products",
     },
   },
   hero: {
-    eyebrow: { fa: "آشنایی بیشتر با بهروز", en: "Know more about Behrouz" },
+    eyebrow: { fa: "داستان بهروز را بخوانید", en: "Discover the Behrouz story" },
     title: { fa: "از گذشته تا امروز، با بهروز", en: "From the past to today, with Behrouz" },
     script: { fa: "دوست من سلام", en: "Hello my friend" },
   },
   footer: {
-    heading: { fa: "با بهروز در ارتباط باشید", en: "Stay in touch with Behrouz" },
+    heading: { fa: "راه‌های ارتباط با بهروز", en: "Ways to reach Behrouz" },
     centralPhone: { fa: "تلفن دفتر مرکزی", en: "Head office phone" },
     factoryPhone: { fa: "تلفن کارخانه", en: "Factory phone" },
     fax: { fa: "دورنگار", en: "Fax" },
     email: { fa: "پست الکترونیک", en: "Email" },
     copyright: {
-      fa: "کلیه حقوق این وب سایت متعلق به صنایع غذایی بهروز می‌باشد.",
+      fa: "تمام حقوق این وب‌سایت برای صنایع غذایی بهروز محفوظ است.",
       en: "All rights reserved — Behrouz Food Industries.",
     },
   },
@@ -55,8 +60,8 @@ export const STR = {
     },
     comingSoon: { fa: "به‌زودی", en: "Coming soon" },
     clickImageHint: {
-      fa: "برای مشاهده محصولات هر دسته روی تصویر کلیک کنید",
-      en: "Click a category image to explore its products",
+      fa: "برای دیدن محصولات این دسته، تصویر را انتخاب کنید",
+      en: "Select the image to see this category's products",
     },
     sampleImage: { fa: "تصویر نمونه", en: "Sample image" },
     allProducts: { fa: "همه محصولات", en: "All products" },
@@ -71,27 +76,27 @@ export const STR = {
     // Condensed 2-sentence summary used on the HOME page about-section (the full
     // `story` below stays on the /about page).
     storyHome: {
-      fa: "صنایع غذایی بهروز نیک از سال ۱۳۵۶، با تکیه بر تلاش، دانش تخصصی و فناوری‌های نوین، طعمی پایدار و کیفیتی سلامت‌محور را به سفره‌ی خانواده‌ها آورده است؛ از کچاپ و مایونز تا مربا و آبلیمو، با استانداردهای جهانی.",
-      en: "Since 1977, Behrouz Nik Food Industries has brought lasting taste and health-focused quality to families' tables — from ketchup and mayonnaise to jams and lemon juice, all made to international standards.",
+      fa: "بهروز از سال ۱۳۵۶ با یک مسیر روشن پیش آمده است: شناخت ذائقه مردم، توسعه محصول با دانش فنی و کنترل مداوم کیفیت. نتیجه، سبدی از سس‌ها، کنسروها، مرباها و چاشنی‌هایی است که نسل‌های مختلف با آن آشنا هستند.",
+      en: "Since 1977, Behrouz has followed a clear path: understanding local tastes, developing products through technical expertise and maintaining consistent quality control. The result is a portfolio of sauces, canned foods, jams and condiments familiar to generations of consumers.",
     },
     story: {
-      fa: "صنایع غذایی بهروز نیک از سال ۱۹۷۷ با چشم‌اندازی روشن پایه‌گذاری شد: پاسداری از رضایت مصرف‌کننده از طریق تلاش، دانش تخصصی و به‌کارگیری مداوم فناوری‌های نوین صنایع غذایی. بهروز در طول دهه‌ها سبد متنوعی شامل کچاپ، سس مایونز، مربا و آبلیمو را با بالاترین استانداردهای کیفیت بین‌المللی تولید کرده و علاوه بر سراسر ایران، در بازارهای منطقه و بخش‌هایی از اروپا توزیع می‌کند. بهروز به‌عنوان یکی از نخستین تولیدکنندگان ایرانی کچاپ و مایونز در منطقه، با ارائه‌ی طعم پایدار، اعتماد و کیفیتِ سلامت‌محور، انتخابی ماندگار برای خانواده‌ها بوده است.",
-      en: "Behrouz Nik Food Industries has been crafting trusted Iranian food products since 1977, built on a clear vision: protect consumer satisfaction through hard work, expert know-how, and constant adoption of modern food technologies. Over the decades, Behrouz has expanded a diverse portfolio including ketchup, mayonnaise, jams, and lemon juice, produced to high international quality standards and distributed across Iran as well as regional markets and parts of Europe. As one of the earliest Iranian producers of ketchup and mayonnaise in the region, Behrouz has earned long-term preference by delivering consistent taste, reliability, and health-focused quality.",
+      fa: "صنایع غذایی بهروز نیک در سال ۱۳۵۶ با تمرکز بر نیاز مصرف‌کننده، دانش تخصصی و بهبود مستمر فناوری تولید شکل گرفت. بهروز در دهه‌های بعد سبد خود را از کچاپ و مایونز به کنسرو، مربا، ترشی، خیارشور و آبلیمو گسترش داد و هم‌زمان کنترل کیفیت را در تمام مسیر تولید توسعه داد. حضور مستمر در بازار ایران و بازارهای صادراتی، نتیجه همین مسیر بلندمدت است.",
+      en: "Behrouz Nik Food Industries was established in 1977 with a focus on consumer needs, technical expertise and continuous improvement in production technology. In the decades that followed, Behrouz expanded from ketchup and mayonnaise into canned foods, jams, pickles, gherkins and lime juice, while strengthening quality control throughout production. Its continuing presence in Iran and export markets reflects that long-term approach.",
     },
     portfolioTitle: { fa: "محصولات ما", en: "Our portfolio" },
     portfolioSub: {
-      fa: "کچاپ، سس مایونز، مربا و آبلیمو — با استانداردهای بین‌المللی",
-      en: "Ketchup, mayonnaise, jams and lemon juice — to international standards",
+      fa: "سس، کنسرو، مربا، ترشی، خیارشور و آبلیمو",
+      en: "Sauces, canned foods, jams, pickles, gherkins and lime juice",
     },
     qualityTitle: { fa: "از مزرعه تا قفسه", en: "From Farm to Shelf" },
     quality: {
-      fa: "در قلب برند بهروز، برنامه‌ی کیفیت «از مزرعه تا قفسه» قرار دارد: مواد اولیه از مزارع منتخب تأمین می‌شود، در شرایطی بهداشتی و ملایم فرآوری و بسته‌بندی می‌گردد و با کامیون‌های یخچال‌دار برای حفظ تازگی و ایمنی توزیع می‌شود. بهروز با ترکیب دانش ایرانی و بین‌المللی، کشاورزان را در تولید گوجه‌فرنگی، میوه و سبزیجاتِ باکیفیت‌تر یاری می‌کند و همزمان با فناوری‌های نوین تولید و بسته‌بندی بهبود می‌یابد. این کنترلِ سرتاسری، ماندگاریِ بالا را بدون اتکا به مواد نگهدارنده ممکن می‌سازد.",
-      en: "At the heart of the brand is Behrouz's \"From Farm to Shelf\" quality program: ingredients are sourced from selected farms, processed and packaged under gentle, hygienic conditions, and distributed in temperature-controlled trucks to protect freshness and safety. Behrouz combines Iranian and international expertise to support farmers in producing higher-quality tomatoes, fruits, and vegetables while improving through modern production and packaging technologies. This end-to-end control enables long shelf life without relying on preservatives.",
+      fa: "در رویکرد «از مزرعه تا قفسه»، کیفیت از انتخاب و ارزیابی مواد اولیه آغاز می‌شود و در تولید، بسته‌بندی، انبارش و توزیع ادامه پیدا می‌کند. بهروز با ترکیب دانش کشاورزی، آزمون‌های آزمایشگاهی و فناوری تولید، هر مرحله را ثبت و کنترل می‌کند تا محصول با مشخصات تأییدشده به بازار برسد.",
+      en: "In the farm-to-shelf approach, quality begins with ingredient selection and assessment, then continues through production, packaging, storage and distribution. Behrouz combines agricultural knowledge, laboratory testing and production technology to record and control each stage until the approved product reaches the market.",
     },
     standardsTitle: { fa: "استانداردهای ما", en: "Our standards" },
     standardsSub: {
-      fa: "سیستم‌های بهروز با استانداردهای شناخته‌شده‌ی بین‌المللی پشتیبانی می‌شوند.",
-      en: "Behrouz's systems are supported by internationally recognized standards.",
+      fa: "فرایندهای تولید و کنترل کیفیت بهروز بر پایه استانداردهای معتبر مدیریت می‌شوند.",
+      en: "Behrouz production and quality-control processes are managed against recognised standards.",
     },
     cta: { fa: "درباره بهروز بیشتر بدانید", en: "Learn more about Behrouz" },
   },
@@ -107,8 +112,8 @@ export const STR = {
     address: { fa: "آدرس", en: "Address" },
     voiceTitle: { fa: "صدای مشتری", en: "Customer voice" },
     voiceSub: {
-      fa: "نظرات، انتقادات و پیشنهادات خود را با ما در میان بگذارید",
-      en: "Share your comments, feedback and suggestions with us",
+      fa: "نظر، انتقاد یا پیشنهاد خود را مستقیم با ما در میان بگذارید",
+      en: "Share your comments, concerns or suggestions directly with us",
     },
     emailsTitle: { fa: "پست الکترونیک واحدها", en: "Department emails" },
     headOfficeAddress: {
@@ -144,6 +149,6 @@ export const CONTACT_INFO = {
     postal: "3366139553",
     phones: ["۰۲۶-۳۴۳۷۳۵۰۰ الی ۱۶", "۰۲۶-۳۴۳۷۳۹۰۳ الی ۱۱۰"],
   },
-  customerVoice: "۴۴۵۳۶۰۹۳",
+  customerVoice: "۰۲۱-۴۴۵۳۶۰۹۳",
   standards: ["ISO 22000", "ISO 9001", "HACCP"],
 };

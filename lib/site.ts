@@ -2,7 +2,7 @@
 
 export type NavItem = {
   /** key into STR.nav for the label (bilingual) */
-  key: "home" | "about" | "products" | "contact";
+  key: "home" | "about" | "distribution" | "products" | "contact" | "careers";
   href: string;
   /** when true this item opens the products mega-dropdown instead of navigating */
   dropdown?: boolean;
@@ -12,8 +12,10 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { key: "home", href: "/" },
   { key: "about", href: "/about" },
-  { key: "products", href: "/#categories" },
+  { key: "distribution", href: "/distribution" },
+  { key: "products", href: "/products/sauces" },
   { key: "contact", href: "/contact" },
+  { key: "careers", href: "/careers" },
 ];
 
 export type ProductCategory = {
@@ -35,13 +37,13 @@ export const PRODUCT_CATEGORIES: ProductCategory[] = [
   { label: "مربا", labelEn: "Jams", slug: "jam", color: "#8e2a6b" },
   { label: "ترشی", labelEn: "Pickles", slug: "pickles", color: "#6f8f1e" },
   { label: "خیارشور", labelEn: "Gherkins", slug: "gherkin", color: "#2f8f57" },
-  { label: "آب لیمو", labelEn: "Lime juice", slug: "lime-juice", color: "#d0aa16" },
+  { label: "آبلیمو", labelEn: "Lime juice", slug: "lime-juice", color: "#d0aa16" },
 ];
 
 export const BRAND = {
   name: "بهروز",
   tagline: "صنایع غذایی",
-  logo: "/media/site/logo.png",
+  logo: "/media/site/behrouz-logo.png",
 };
 
 // Home showcase-rail categories (visuals come from CATEGORY_SCENES per slug).
@@ -53,12 +55,12 @@ export type ShowcaseCategory = {
 
 // Visual left→right order; SHOWCASE_DEFAULT picks the centered one.
 export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
-  { fa: "آبلیمو‌ها", en: "Lime juices", slug: "lime-juice" },
+  { fa: "آبلیموها", en: "Lime juices", slug: "lime-juice" },
   { fa: "ترشی‌ها", en: "Pickles", slug: "pickles" },
-  { fa: "خیارشور‌ها", en: "Pickled cucumbers", slug: "gherkin" },
-  { fa: "کنسرو‌ها", en: "Canned", slug: "canned" },
+  { fa: "خیارشورها", en: "Pickled cucumbers", slug: "gherkin" },
+  { fa: "کنسروها", en: "Canned", slug: "canned" },
   { fa: "سس‌ها", en: "Sauces", slug: "sauces" },
-  { fa: "مربا‌ها", en: "Jams", slug: "jam" },
+  { fa: "مرباها", en: "Jams", slug: "jam" },
 ];
 
 // Sauces (index 4) shows on load; every category now has real product art.
@@ -74,10 +76,21 @@ export type ScenePos = {
   rotate: number;
   z: number;
 };
-export type SceneProduct = { src: string; d: ScenePos; m: ScenePos };
+export type SceneProduct = {
+  src: string;
+  d: ScenePos;
+  m: ScenePos;
+  /** Optional explicit link to a product sub-category used by hero hover. */
+  subId?: string;
+};
 export type CategoryScene = { bg: string; products: SceneProduct[] };
 
 export const DEFAULT_SCENE_BG = "/media/sauces/splash-bg.webp";
+
+// Leave empty until the approved replacement cutout for the middle pickle
+// hero product is ready. Then place the file under public/media/pickles/ and
+// set this value, e.g. "/media/pickles/replacement-product.webp".
+export const PICKLES_HERO_REPLACEMENT_IMAGE = "";
 
 export const CATEGORY_SCENES: Record<string, CategoryScene> = {
   sauces: {
@@ -85,16 +98,19 @@ export const CATEGORY_SCENES: Record<string, CategoryScene> = {
     products: [
       {
         src: "/media/sauces/standard-mayo.webp",
+        subId: "mayo",
         d: { left: 33.8, width: 25.6, bleed: 16, rotate: 1.93, z: 10 },
         m: { left: 16, width: 72, bleed: 16, rotate: 1.93, z: 10 },
       },
       {
         src: "/media/sauces/ketchup-scene.webp",
+        subId: "ketchup",
         d: { left: 51.3, width: 20.5, bleed: 14, rotate: 2.94, z: 30 },
         m: { left: 55, width: 62, bleed: 12, rotate: 2.94, z: 30 },
       },
       {
         src: "/media/sauces/french.webp",
+        subId: "dressings",
         d: { left: 67.5, width: 20.9, bleed: 15, rotate: 15, z: 20 },
         m: { left: 88, width: 64, bleed: 16, rotate: 15, z: 20 },
       },
@@ -108,11 +124,11 @@ export const CATEGORY_SCENES: Record<string, CategoryScene> = {
         d: { left: 33.1, width: 23.4, bleed: 4, rotate: 0, z: 10 },
         m: { left: 18, width: 66, bleed: 6, rotate: 0, z: 10 },
       },
-      {
-        src: "/media/pickles/generic-placeholder.webp",
+      ...(PICKLES_HERO_REPLACEMENT_IMAGE ? [{
+        src: PICKLES_HERO_REPLACEMENT_IMAGE,
         d: { left: 49.9, width: 24.5, bleed: 6, rotate: 0, z: 30 },
         m: { left: 52, width: 66, bleed: 8, rotate: 0, z: 30 },
-      },
+      }] : []),
       {
         src: "/media/pickles/jalapeno.webp",
         d: { left: 66.4, width: 24.1, bleed: 4, rotate: 22, z: 20 },
@@ -200,11 +216,10 @@ export const CATEGORY_SCENES: Record<string, CategoryScene> = {
 
 // Footer contact strings now live in lib/i18n.ts (STR.footer + CONTACT_INFO).
 
-// Replace `#` with the real profile URLs.
 export const SOCIALS = [
-  { name: "instagram", href: "#" },
-  { name: "linkedin", href: "#" },
-  { name: "aparat", href: "#" },
+  { name: "instagram", href: "https://www.instagram.com/behrouz_foodindustry/" },
+  { name: "linkedin", href: "https://www.linkedin.com/company/behrouznik-food-industries/" },
+  { name: "aparat", href: "https://www.aparat.com/behrouznik" },
 ] as const;
 
 // Home about-section media (all copy lives in lib/i18n.ts → STR.about).

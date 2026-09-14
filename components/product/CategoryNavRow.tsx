@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { PRODUCT_CATEGORIES } from "@/lib/site";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 import { STR } from "@/lib/i18n";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 import { CategoryCircle } from "@/components/navbar/CategoryCircle";
@@ -16,6 +16,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
  *  padding around a compact row. */
 export function CategoryNavRow({ currentSlug }: { currentSlug: string }) {
   const { locale, t } = useLocale();
+  const { productCategories } = useCMSContent();
   const en = locale === "en";
   const font = en ? "font-montserrat" : "font-yekan";
 
@@ -33,7 +34,7 @@ export function CategoryNavRow({ currentSlug }: { currentSlug: string }) {
         </h2>
 
         <div className="mt-10 grid grid-cols-3 gap-x-4 gap-y-10 sm:grid-cols-6 sm:gap-8">
-          {PRODUCT_CATEGORIES.map((cat) => {
+          {productCategories.map((cat) => {
             const active = cat.slug === currentSlug;
             return (
               <Link

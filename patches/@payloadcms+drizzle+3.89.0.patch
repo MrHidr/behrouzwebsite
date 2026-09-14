@@ -1,0 +1,24 @@
+diff --git a/node_modules/@payloadcms/drizzle/dist/exports/postgres.js b/node_modules/@payloadcms/drizzle/dist/exports/postgres.js
+index 0794e10..35792a8 100644
+--- a/node_modules/@payloadcms/drizzle/dist/exports/postgres.js
++++ b/node_modules/@payloadcms/drizzle/dist/exports/postgres.js
+@@ -10,7 +10,6 @@ export { execute } from '../postgres/execute.js';
+ export { init } from '../postgres/init.js';
+ export { insert } from '../postgres/insert.js';
+ export { migratePostgresV2toV3 } from '../postgres/predefinedMigrations/v2-v3/index.js';
+-export { requireDrizzleKit } from '../postgres/requireDrizzleKit.js';
+ export { geometryColumn } from '../postgres/schema/geometryColumn.js';
+ export * from '../postgres/types.js';
+ 
+diff --git a/node_modules/@payloadcms/drizzle/dist/exports/sqlite.js b/node_modules/@payloadcms/drizzle/dist/exports/sqlite.js
+index 0a5ec7d..42c8ca9 100644
+--- a/node_modules/@payloadcms/drizzle/dist/exports/sqlite.js
++++ b/node_modules/@payloadcms/drizzle/dist/exports/sqlite.js
+@@ -8,7 +8,6 @@ export { dropDatabase } from '../sqlite/dropDatabase.js';
+ export { execute } from '../sqlite/execute.js';
+ export { init } from '../sqlite/init.js';
+ export { insert } from '../sqlite/insert.js';
+-export { requireDrizzleKit } from '../sqlite/requireDrizzleKit.js';
+ export * from '../sqlite/types.js';
+ 
+ //# sourceMappingURL=sqlite.js.map

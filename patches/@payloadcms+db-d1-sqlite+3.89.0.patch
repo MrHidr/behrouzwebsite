@@ -1,0 +1,35 @@
+diff --git a/node_modules/@payloadcms/db-d1-sqlite/dist/index.js b/node_modules/@payloadcms/db-d1-sqlite/dist/index.js
+index fc1d364..6efe5cf 100644
+--- a/node_modules/@payloadcms/db-d1-sqlite/dist/index.js
++++ b/node_modules/@payloadcms/db-d1-sqlite/dist/index.js
+@@ -1,11 +1,28 @@
+ import { beginTransaction, buildCreateMigration, commitTransaction, count, countGlobalVersions, countVersions, create, createBlocksToJsonMigrator, createGlobal, createGlobalVersion, createSchemaGenerator, createVersion, deleteMany, deleteOne, deleteVersions, destroy, find, findGlobal, findGlobalVersions, findOne, findVersions, migrate, migrateDown, migrateFresh, migrateRefresh, migrateReset, migrateStatus, operatorMap, queryDrafts, rollbackTransaction, updateGlobal, updateGlobalVersion, updateJobs, updateMany, updateOne, updateVersion } from '@payloadcms/drizzle';
+-import { columnToCodeConverter, convertPathToJSONTraversal, countDistinct, createJSONQuery, defaultDrizzleSnapshot, deleteWhere, dropDatabase, init, insert, requireDrizzleKit } from '@payloadcms/drizzle/sqlite';
++import { columnToCodeConverter, convertPathToJSONTraversal, countDistinct, createJSONQuery, defaultDrizzleSnapshot, deleteWhere, dropDatabase, init, insert } from '@payloadcms/drizzle/sqlite';
+ import { like, notLike } from 'drizzle-orm';
+-import { createDatabaseAdapter, defaultBeginTransaction, findMigrationDir } from 'payload';
++import { createDatabaseAdapter, defaultBeginTransaction, dynamicImport, findMigrationDir } from 'payload';
+ import { fileURLToPath } from 'url';
+ import { connect } from './connect.js';
+ import { execute } from './execute.js';
+ const filename = fileURLToPath(import.meta.url);
++let drizzleKitPromise;
++const loadDrizzleKit = ()=>{
++    drizzleKitPromise ??= dynamicImport('drizzle-kit/api').then(({ generateSQLiteDrizzleJson: generateDrizzleJson, generateSQLiteMigration: generateMigration, pushSQLiteSchema: pushSchema })=>({
++            generateDrizzleJson,
++            generateMigration,
++            pushSchema
++        })).catch((error)=>{
++        drizzleKitPromise = undefined;
++        throw error;
++    });
++    return drizzleKitPromise;
++};
++const requireDrizzleKit = ()=>({
++        generateDrizzleJson: async (...args)=>(await loadDrizzleKit()).generateDrizzleJson(...args),
++        generateMigration: async (...args)=>(await loadDrizzleKit()).generateMigration(...args),
++        pushSchema: async (...args)=>(await loadDrizzleKit()).pushSchema(...args)
++    });
+ export function sqliteD1Adapter(args) {
+     const sqliteIDType = args.idType || 'number';
+     const payloadIDType = sqliteIDType === 'uuid' || sqliteIDType === 'uuidv7' ? 'text' : 'number';

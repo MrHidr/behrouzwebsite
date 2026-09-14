@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useCMSContent } from "@/components/cms/CMSContentProvider";
 import { DEFAULT_LOCALE, dir, type Locale } from "@/lib/i18n";
+import { resolveManagedCopy } from "@/lib/managed-content";
 
 type Ctx = {
   locale: Locale;
@@ -14,6 +16,7 @@ type Ctx = {
 const LocaleCtx = createContext<Ctx | null>(null);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
+  const cmsContent = useCMSContent();
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
   // Apply saved locale on mount (default is Persian, so first paint is correct
@@ -43,8 +46,9 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   );
 
   const t = useCallback(
-    (pair: { fa: string; en: string }) => pair[locale],
-    [locale]
+    (pair: { fa: string; en: string }) =>
+      resolveManagedCopy(cmsContent.copyOverrides, pair, locale),
+    [cmsContent.copyOverrides, locale]
   );
 
   return (
