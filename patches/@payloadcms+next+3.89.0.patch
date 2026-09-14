@@ -1,0 +1,13 @@
+diff --git a/node_modules/@payloadcms/next/dist/utilities/setPayloadAuthCookie.js b/node_modules/@payloadcms/next/dist/utilities/setPayloadAuthCookie.js
+index 0489e5e..a594028 100644
+--- a/node_modules/@payloadcms/next/dist/utilities/setPayloadAuthCookie.js
++++ b/node_modules/@payloadcms/next/dist/utilities/setPayloadAuthCookie.js
+@@ -6,7 +6,7 @@ export async function setPayloadAuthCookie({
+   token
+ }) {
+   const cookies = await getCookies();
+-  const cookieExpiration = authConfig.tokenExpiration ? new Date(Date.now() + authConfig.tokenExpiration) : undefined;
++  const cookieExpiration = authConfig.tokenExpiration ? new Date(Date.now() + authConfig.tokenExpiration * 1000) : undefined;
+   const payloadCookie = generatePayloadCookie({
+     collectionAuthConfig: authConfig,
+     cookiePrefix,
